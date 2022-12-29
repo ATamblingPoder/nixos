@@ -93,7 +93,10 @@
     gnome-calendar
     gnome-software
   ]);
-       
+  
+  # Enable steam
+  programs.steam.enable = true;
+         
   # Configure keymap in X11
   services.xserver = {
     layout = "in";
@@ -120,9 +123,18 @@
     ];
   };
   
-  # Enable OpenGL
   hardware.opengl.driSupport = true;
   hardware.opengl.driSupport32Bit = true;  
+
+  security.doas.enable = true;
+  security.sudo.enable = false;
+
+  # Configure doas
+  security.doas.extraRules = [{
+  users = [ "agoel" ];
+  keepEnv = true;
+  persist = true;  
+  }];
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -156,6 +168,8 @@
       sublime4
       tdesktop
       qbittorrent
+      figlet
+      gh
     ];
   };
   
@@ -182,8 +196,9 @@
   
   # Set ZSH as default shell
   programs.zsh.enable = true;
+  programs.xonsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
-  environment.shells = with pkgs; [ zsh ];
+  environment.shells = with pkgs; [ zsh xonsh];
   
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -227,7 +242,12 @@
     gnome-podcasts
     libreoffice-fresh
     hunspell
-    jigdo
+    vulkan-tools
+    vulkan-loader
+    vulkan-validation-layers
+    vulkan-headers
+    amdvlk
+    file
   ];
 
   # Enable WEP support in wpa_supplicant
