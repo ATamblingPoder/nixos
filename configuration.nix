@@ -8,6 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      # ./gnomer.nix
+      ./kder.nix
     ];
 
   # Bootloader.
@@ -61,39 +63,7 @@
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-
-  # Enable the KDE Plasma Desktop Environment.
-  # services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.desktopManager.plasma5.enable = true;
-  
-  # Enable GNOME
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  
-  # Exclude extra GNOME applications
-  environment.gnome.excludePackages = (with pkgs; [
-    gnome-photos
-    gnome-tour
-    gnome-connections
-    gnome-text-editor
-    gnome-console
-  ]) ++ (with pkgs.gnome; [
-    epiphany
-    geary
-    gnome-characters
-    totem
-    tali
-    iagno
-    hitori
-    atomix
-    gnome-contacts
-    gnome-weather
-    gnome-clocks
-    gnome-maps
-    gnome-calendar
-    gnome-software
-  ]);
-  
+    
   # Enable steam
   programs.steam.enable = true;
          
@@ -173,32 +143,33 @@
     ];
   };
   
-  #  virtualisation = {
-  #    podman = {
-  #      enable = true;
-  #
-  #      # Create a `docker` alias for podman, to use it as a drop-in replacement
-  #      dockerCompat = true;
-  #
-  #      # Required for containers under podman-compose to be able to talk to each other.
-  #      defaultNetwork.dnsname.enable = true;
-  #    };
-  #  };
+    virtualisation = {
+      podman = {
+        enable = true;
+  
+        # Create a `docker` alias for podman, to use it as a drop-in replacement
+        dockerCompat = true;
+  
+        # Required for containers under podman-compose to be able to talk to each other.
+        defaultNetwork.dnsname.enable = true;
+      };
+    };
 
-  services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
+  # services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
   services.flatpak.enable = true;
        
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   
   # Enable Dconf
-  programs.dconf.enable = true;
+  # programs.dconf.enable = true;
   
   # Set ZSH as default shell
   programs.zsh.enable = true;
-  programs.xonsh.enable = true;
-  users.defaultUserShell = pkgs.zsh;
-  environment.shells = with pkgs; [ zsh xonsh];
+  # programs.xonsh.enable = true;
+  users.defaultUserShell = pkgs.fish;
+  programs.fish.enable = true;
+  environment.shells = with pkgs; [ zsh fish ];
   
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -232,14 +203,7 @@
     wirelesstools
     yt-dlp
     vlc
-    adw-gtk3
-    pkgs.gnome.gnome-tweaks
-    gnome.adwaita-icon-theme
-    gnomeExtensions.appindicator
-    gnome.gnome-terminal
-    caffeine-ng
     python3Full
-    gnome-podcasts
     libreoffice-fresh
     hunspell
     vulkan-tools
@@ -248,6 +212,7 @@
     vulkan-headers
     amdvlk
     file
+    distrobox
   ];
 
   # Enable WEP support in wpa_supplicant
