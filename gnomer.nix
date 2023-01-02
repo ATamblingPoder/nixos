@@ -42,5 +42,6 @@
     gnome.gnome-terminal
     caffeine-ng
     gnome-podcasts
+    gnome.libgnome-keyring
   ];
 }

@@ -8,8 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # ./gnomer.nix
-      ./kder.nix
+      ./gnomer.nix
+      # ./kder.nix
     ];
 
   # Bootloader.
@@ -211,8 +211,13 @@
     vulkan-validation-layers
     vulkan-headers
     amdvlk
+    dxvk
+    khronos-ocl-icd-loader
     file
     distrobox
+    foliate
+    dnsmasq
+    libsecret
   ];
 
   # Enable WEP support in wpa_supplicant
