@@ -25,7 +25,7 @@
     gnome-weather
     gnome-clocks
     gnome-maps
-    gnome-calendar
+    # gnome-calendar
     gnome-software
   ]);
 
@@ -43,5 +43,6 @@
     caffeine-ng
     gnome-podcasts
     gnome.libgnome-keyring
+    gnomeExtensions.aylurs-widgets
   ];
 }

@@ -167,7 +167,7 @@
   # Set ZSH as default shell
   programs.zsh.enable = true;
   # programs.xonsh.enable = true;
-  users.defaultUserShell = pkgs.fish;
+  users.defaultUserShell = pkgs.zsh;
   programs.fish.enable = true;
   environment.shells = with pkgs; [ zsh fish ];
   
