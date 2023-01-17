@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 
 {
@@ -23,13 +19,13 @@
   boot.plymouth.enable = true;
   
   # Setup keyfile
-  boot.initrd.secrets = {
-    "/crypto_keyfile.bin" = null;
-  };
+  # boot.initrd.secrets = {
+  #   "/crypto_keyfile.bin" = null;
+  # };
   boot.initrd.systemd.enable = true;
   # Enable swap on luks
-  boot.initrd.luks.devices."luks-722b634f-9ea2-437a-a033-f5e489f3b58a".device = "/dev/disk/by-uuid/722b634f-9ea2-437a-a033-f5e489f3b58a";
-  boot.initrd.luks.devices."luks-722b634f-9ea2-437a-a033-f5e489f3b58a".keyFile = "/crypto_keyfile.bin";
+  # boot.initrd.luks.devices."luks-722b634f-9ea2-437a-a033-f5e489f3b58a".device = "/dev/disk/by-uuid/722b634f-9ea2-437a-a033-f5e489f3b58a";
+  # boot.initrd.luks.devices."luks-722b634f-9ea2-437a-a033-f5e489f3b58a".keyFile = "/crypto_keyfile.bin";
 
   networking.hostName = "nixy"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -161,9 +157,6 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   
-  # Enable Dconf
-  # programs.dconf.enable = true;
-  
   # Set ZSH as default shell
   programs.zsh.enable = true;
   # programs.xonsh.enable = true;
@@ -171,9 +164,8 @@
   programs.fish.enable = true;
   environment.shells = with pkgs; [ zsh fish ];
   
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
+    neovim
     vim
     wget
     htop
@@ -186,7 +178,6 @@
     lutris
     appimage-run
     wine-staging
-    ark
     unrar
     p7zip
     aria

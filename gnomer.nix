@@ -38,11 +38,8 @@
     pkgs.gnome.gnome-tweaks
     gnome.adwaita-icon-theme
     gnomeExtensions.appindicator
-    gnomeExtensions.gamemode
     gnome.gnome-terminal
     caffeine-ng
-    gnome-podcasts
     gnome.libgnome-keyring
-    gnomeExtensions.aylurs-widgets
   ];
 }
