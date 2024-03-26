@@ -148,11 +148,9 @@
 
   environment.systemPackages = with pkgs; [
     vim
-    neovim
     sublime4
     wget
     lshw
-    htop
     yt-dlp
     podman-compose
     distrobox
