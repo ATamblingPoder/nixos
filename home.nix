@@ -25,7 +25,7 @@
   programs.git = {
     enable = true;
     delta.enable = true;
-    userEmail = "117522662+ATamblingPoder@users.noreply.git";
+    userEmail = "117522662+ATamblingPoder@users.noreply.github.com";
     userName = "ATamblingPoder";
   };
 
