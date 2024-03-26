@@ -1,33 +1,23 @@
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+
 { config, pkgs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./gnomer.nix
-      # ./kder.nix
     ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  
-  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;  
-  
-  # Plymouth
   boot.plymouth.enable = true;
-  
-  # Setup keyfile
-  # boot.initrd.secrets = {
-  #   "/crypto_keyfile.bin" = null;
-  # };
   boot.initrd.systemd.enable = true;
-  # Enable swap on luks
-  # boot.initrd.luks.devices."luks-722b634f-9ea2-437a-a033-f5e489f3b58a".device = "/dev/disk/by-uuid/722b634f-9ea2-437a-a033-f5e489f3b58a";
-  # boot.initrd.luks.devices."luks-722b634f-9ea2-437a-a033-f5e489f3b58a".keyFile = "/crypto_keyfile.bin";
-
-  networking.hostName = "nixy"; # Define your hostname.
+  boot.kernelParams = [ "quiet" "splash" ];
+  boot.initrd.luks.devices."luks-4cffc041-d0b9-47cd-98ec-295acd444804".device = "/dev/disk/by-uuid/4cffc041-d0b9-47cd-98ec-295acd444804";
+  networking.hostName = "nixyy"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -36,9 +26,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-  services.fwupd.enable = true;  
-  hardware.bluetooth.enable = true;
-    
+
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
 
@@ -57,50 +45,48 @@
     LC_TIME = "en_IN";
   };
 
+  # Enable OpenGL
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
+  };
+
+  # Load nvidia driver for X11 and Wayland
+  services.xserver.videoDrivers = ["nvidia"];
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = false;
+    powerManagement.finegrained = false;
+    open = false;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.production;
+    prime = {
+      reverseSync.enable = true;
+      amdgpuBusId = "PCI:4:0:0";
+      nvidiaBusId = "PCI:1:0:0";
+    #   offload = {
+    #     enable = true;
+    #     enableOffloadCmd = true;
+    #   };
+    };
+  };
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-    
-  # Enable steam
-  programs.steam.enable = true;
-         
+
+  # Enable the Cinnamon Desktop Environment.
+  services.xserver.displayManager.lightdm.enable = true;
+  services.xserver.desktopManager.cinnamon.enable = true;
+
   # Configure keymap in X11
-  services.xserver = {
+  services.xserver.xkb = {
     layout = "in";
-    xkbVariant = "eng";
+    variant = "eng";
   };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
-  
-  # Enable VA-API
-  nixpkgs.config.packageOverrides = pkgs: {
-    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
-  };  
-  
-  nix.extraOptions = ''experimental-features = nix-command flakes'';
-  
-  hardware.opengl = {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver 
-      vaapiIntel         
-      vaapiVdpau
-      libvdpau-va-gl
-    ];
-  };
-  
-  hardware.opengl.driSupport = true;
-  hardware.opengl.driSupport32Bit = true;  
-
-  security.doas.enable = true;
-  security.sudo.enable = false;
-
-  # Configure doas
-  security.doas.extraRules = [{
-  users = [ "agoel" ];
-  keepEnv = true;
-  persist = true;  
-  }];
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -122,96 +108,65 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  # Enable power-profiles-daemon
+  services.power-profiles-daemon.enable = true;
+
+  # Enable podman
+  virtualisation = {
+    libvirtd.enable = true;
+    podman = {
+      enable = true;
+
+      # Create a `docker` alias for podman, to use it as a drop-in replacement
+      dockerCompat = true;
+
+      # Required for containers under podman-compose to be able to talk to each other.
+      defaultNetwork.settings.dns_enabled = true;
+    };
+  };
+
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.agoel = {
     isNormalUser = true;
     description = "Ansh Goel";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      freetube
-      ungoogled-chromium
-      git
-      sublime4
-      tdesktop
-      qbittorrent
-      figlet
-      gh
+      firefox
+      discord
     ];
   };
-  
-    virtualisation = {
-      podman = {
-        enable = true;
-  
-        # Create a `docker` alias for podman, to use it as a drop-in replacement
-        dockerCompat = true;
-  
-        # Required for containers under podman-compose to be able to talk to each other.
-        defaultNetwork.dnsname.enable = true;
-      };
-    };
 
-  # services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
-  services.flatpak.enable = true;
-       
   # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-  
-  # Set ZSH as default shell
-  programs.zsh.enable = true;
-  # programs.xonsh.enable = true;
-  users.defaultUserShell = pkgs.zsh;
-  programs.fish.enable = true;
-  environment.shells = with pkgs; [ zsh fish ];
-  
+  nixpkgs.config = {
+    allowUnfree = true;
+    permittedInsecurePackages = [ "openssl-1.1.1w" ];
+  };
+
+  # Enable virt-manager
+  programs.virt-manager.enable = true;
+
   environment.systemPackages = with pkgs; [
-    neovim
     vim
+    neovim
+    sublime4
     wget
+    lshw
     htop
-    neofetch
-    firefox
-    papirus-icon-theme
-    inter
-    cascadia-code
-    libva-utils
-    lutris
-    appimage-run
-    wine-staging
-    unrar
-    p7zip
-    aria
-    gamemode
-    mangohud
-    gcc
-    gnumake
-    gparted
-    ntfs3g
-    mpv
-    topgrade
-    vistafonts
-    corefonts
-    wirelesstools
     yt-dlp
-    vlc
-    python3Full
-    libreoffice-fresh
-    hunspell
-    vulkan-tools
-    vulkan-loader
-    vulkan-validation-layers
-    vulkan-headers
-    amdvlk
-    dxvk
-    khronos-ocl-icd-loader
-    file
+    podman-compose
     distrobox
-    foliate
-    dnsmasq
-    libsecret
+    glxinfo
+    htop
+    aria
+    motrix
+    xorg.xhost
+    unzip
+    p7zip
+    activitywatch
   ];
 
-  # Enable WEP support in wpa_supplicant
+  # Wpa supplicant
   nixpkgs.overlays = [
     (self: super: {
       wpa_supplicant = super.wpa_supplicant.overrideAttrs (oldAttrs: rec {
@@ -221,32 +176,7 @@
       });
     })
   ];
-  
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
 
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "22.11"; # Did you read the comment?
+  system.stateVersion = "23.11"; # Did you read the comment?
 
 }
